@@ -1,0 +1,120 @@
+import java.util.*;
+
+public class Main {
+    private static final Scanner scan = new Scanner(System.in);
+    private static Node root;
+
+    public static void main(String[] args) {
+        System.out.println("=== Tree Implementation ===");
+        System.out.println("1. Binary Tree");
+        System.out.println("2. Binary Search Tree");
+        System.out.print("Enter Choice: ");
+        int choice = scan.nextInt();
+
+        switch(choice){
+            case 1 -> processTree("Binary Tree");
+            case 2 -> processTree("Binary Search Tree");
+            default -> System.out.println("Invalid Choice!");
+        }
+    }
+
+    public static void processTree(String type){
+        scan.nextLine();
+        ArrayList<Integer> datas = new ArrayList<>();
+        System.out.printf("=== %s ===\n", type);
+        System.out.print("Enter In-Order Traversal Values (space-separated): ");
+        String[] inputs = scan.nextLine().split(" ");
+
+        for(String value: inputs){
+            try {
+                int data = Integer.parseInt(value);
+                if (!datas.contains(data)) datas.add(data);
+                else {
+                    System.out.println("Your input has repeated values!");
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Your inputs are not all integers!");
+                return;
+            }
+        }
+
+        if (type.equals("Binary Search Tree") && !isInOrder(datas)) {
+            System.out.println("Your inputs don't follow the In-Order Traversal of BST!");
+            return;
+        }
+
+        add(datas);
+        System.out.print("In-Order: ");
+        inOrder();
+        System.out.print("\nPre-Order: ");
+        preOrder();
+        System.out.print("\nPost-Order: ");
+        postOrder();
+    }
+
+    public static boolean isInOrder(ArrayList<Integer> data) {
+        for (int i = 1; i < data.size(); i++) {
+            if (data.get(i) <= data.get(i - 1)) return false;
+        }
+        return true;
+    }
+
+    public static void add(ArrayList<Integer> inOrder) {
+        root = build(inOrder, 0, inOrder.size() - 1);
+    }
+
+    public static Node build(ArrayList<Integer> inOrder, int start, int end) {
+        if (start > end) return null;
+        int mid = (start + end) / 2;
+        Node node = new Node(inOrder.get(mid));
+        node.left = build(inOrder, start, mid - 1);
+        node.right = build(inOrder, mid + 1, end);
+        return node;
+    }
+
+    public static void preOrder() {
+        preOrder(root);
+    }
+
+    private static void preOrder(Node node) {
+        if (node != null) {
+            System.out.print(node.data + " ");
+            preOrder(node.left);
+            preOrder(node.right);
+        }
+    }
+
+    public static void postOrder() {
+        postOrder(root);
+    }
+
+    private static void postOrder(Node node) {
+        if (node != null) {
+            postOrder(node.left);
+            postOrder(node.right);
+            System.out.print(node.data + " ");
+        }
+    }
+
+    public static void inOrder() {
+        inOrder(root);
+    }
+
+    private static void inOrder(Node node) {
+        if (node != null) {
+            inOrder(node.left);
+            System.out.print(node.data + " ");
+            inOrder(node.right);
+        }
+    }
+}
+
+class Node {
+    public int data;
+    public Node left, right;
+
+    public Node(int data) {
+        this.data = data;
+    }
+}
